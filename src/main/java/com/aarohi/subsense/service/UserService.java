@@ -1,5 +1,6 @@
 package com.aarohi.subsense.service;
 
+import com.aarohi.subsense.dto.UserResponseDTO;
 import com.aarohi.subsense.entity.User;
 import com.aarohi.subsense.exception.InvalidCredentialsException;
 import com.aarohi.subsense.repository.UserRepository;
@@ -18,11 +19,22 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    public User registerUser(User user) {
+    public UserResponseDTO registerUser(User user) {
+
+        user.setRole("USER");
+
         user.setPassword(
                 passwordEncoder.encode(user.getPassword())
         );
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+
+        return new UserResponseDTO(
+                savedUser.getId(),
+                savedUser.getName(),
+                savedUser.getEmail(),
+                savedUser.getRole()
+        );
     }
     public String loginUser(String email, String password) {
 

@@ -1,5 +1,6 @@
 package com.aarohi.subsense.controller;
 
+import com.aarohi.subsense.dto.UserResponseDTO;
 import com.aarohi.subsense.entity.User;
 import com.aarohi.subsense.service.UserService;
 import jakarta.validation.Valid;
@@ -15,7 +16,7 @@ public class UserController {            //signup entity
         this.userService = userService;
     }
     @PostMapping
-    public User registerUser(@Valid @RequestBody User user) { //Spring receives this JSON and, because of @RequestBody, converts it into a Java User object.
+    public UserResponseDTO registerUser(@Valid @RequestBody User user) { //Spring receives this JSON and, because of @RequestBody, converts it into a Java User object.
         return userService.registerUser(user);
     }
     @PostMapping("/login")
@@ -25,5 +26,9 @@ public class UserController {            //signup entity
                 user.getEmail(),
                 user.getPassword()
         );
+    }
+    @GetMapping("/profile")
+    public String profile() {
+        return "You are authenticated";
     }
 }
