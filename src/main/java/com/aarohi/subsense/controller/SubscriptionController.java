@@ -70,9 +70,5 @@ public class SubscriptionController {
     public DashboardDTO getDashboard() {
         return subscriptionService.getDashboard();
     }
-    @GetMapping("/most-expensive")
-    public SubscriptionResponseDTO getMostExpensiveSubscription() {
 
-        return subscriptionService.getMostExpensiveSubscription();
-    }
 }

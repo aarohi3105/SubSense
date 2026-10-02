@@ -319,39 +319,5 @@ public class SubscriptionService {
         );
     }
 
-    public SubscriptionResponseDTO getMostExpensiveSubscription(){
-        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        List<Subscription> subscriptions =
-                subscriptionRepository.findByUserEmail(email);
 
-        Subscription mostExpensive = null;
-
-        for (Subscription subscription : subscriptions) {
-
-            if (mostExpensive == null ||
-                    subscription.getPrice() > mostExpensive.getPrice()) {
-
-                mostExpensive = subscription;
-            }
-        }
-
-        User user = mostExpensive.getUser();
-
-        UserResponseDTO userDTO = new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole()
-        );
-
-        return new SubscriptionResponseDTO(
-                mostExpensive.getId(),
-                mostExpensive.getName(),
-                mostExpensive.getPrice(),
-                mostExpensive.getCategory(),
-                mostExpensive.getRenewalDate(),
-                userDTO
-        );
-    }
 }
