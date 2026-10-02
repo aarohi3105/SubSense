@@ -1,9 +1,6 @@
 package com.aarohi.subsense.service;
 
-import com.aarohi.subsense.dto.SubscriptionResponseDTO;
-import com.aarohi.subsense.dto.SubscriptionSummaryDTO;
-import com.aarohi.subsense.dto.UpcomingRenewalDTO;
-import com.aarohi.subsense.dto.UserResponseDTO;
+import com.aarohi.subsense.dto.*;
 import com.aarohi.subsense.entity.Subscription;
 import com.aarohi.subsense.entity.User;
 import com.aarohi.subsense.repository.SubscriptionRepository;
@@ -66,6 +63,9 @@ public class SubscriptionService {
                 userDTO
         );
     }
+
+
+
     public List<SubscriptionResponseDTO> getMySubscriptions() {
 
         Authentication authentication =
@@ -76,7 +76,7 @@ public class SubscriptionService {
         List<Subscription> subscriptions =
                 subscriptionRepository.findByUserEmail(email);
 
-        return subscriptions.stream()
+        return subscriptions.stream()  //List ke objects ko ek-ek karke process karne ke liye ready karta hai streams
                 .map(subscription -> {
 
                     User user = subscription.getUser();
@@ -94,11 +94,30 @@ public class SubscriptionService {
                             subscription.getPrice(),
                             subscription.getCategory(),
                             subscription.getRenewalDate(),
-                            userDTO
+                            userDTO                             //Subscription ke andar jo associated User hai, usko retrieve kar rahe hain
                     );
                 })
                 .toList();
     }
+    //    List<SubscriptionResponseDTO> responseList = new ArrayList<>();
+//
+//for (Subscription subscription : subscriptions) {
+//
+//        SubscriptionResponseDTO dto =
+//                new SubscriptionResponseDTO(
+//                        subscription.getId(),
+//                        subscription.getName(),                    //ye jo upar .stream ka use kiya hai uska hi simple equivalent hai
+//                        subscription.getPrice(),
+//                        subscription.getCategory(),
+//                        subscription.getRenewalDate(),
+//                        userDTO
+//                );
+//
+//        responseList.add(dto);
+//    }
+//
+//return responseList;
+
     public SubscriptionResponseDTO updateSubscription(
             Long id,
             Subscription updatedSubscription) {
@@ -148,6 +167,7 @@ public class SubscriptionService {
                 userDTO
         );
     }
+
     public void deleteSubscription(Long id) {
 
         Authentication authentication =
@@ -279,5 +299,59 @@ public class SubscriptionService {
         }
 
         return categorySpending;
+    }
+
+    public DashboardDTO getDashboard(){
+
+        SubscriptionSummaryDTO summary =
+                getSubscriptionSummary();
+
+        Map<String, Double> categoryWiseSpending =
+                getCategoryWiseSpending();
+
+        List<UpcomingRenewalDTO> upcomingRenewals =
+                getUpcomingRenewals();
+
+        return new DashboardDTO(
+                summary,
+                categoryWiseSpending,
+                upcomingRenewals
+        );
+    }
+
+    public SubscriptionResponseDTO getMostExpensiveSubscription(){
+        Authentication authentication =  SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        List<Subscription> subscriptions =
+                subscriptionRepository.findByUserEmail(email);
+
+        Subscription mostExpensive = null;
+
+        for (Subscription subscription : subscriptions) {
+
+            if (mostExpensive == null ||
+                    subscription.getPrice() > mostExpensive.getPrice()) {
+
+                mostExpensive = subscription;
+            }
+        }
+
+        User user = mostExpensive.getUser();
+
+        UserResponseDTO userDTO = new UserResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
+
+        return new SubscriptionResponseDTO(
+                mostExpensive.getId(),
+                mostExpensive.getName(),
+                mostExpensive.getPrice(),
+                mostExpensive.getCategory(),
+                mostExpensive.getRenewalDate(),
+                userDTO
+        );
     }
 }

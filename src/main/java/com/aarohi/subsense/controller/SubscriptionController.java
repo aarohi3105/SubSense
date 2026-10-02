@@ -1,5 +1,6 @@
 package com.aarohi.subsense.controller;
 
+import com.aarohi.subsense.dto.DashboardDTO;
 import com.aarohi.subsense.dto.SubscriptionResponseDTO;
 import com.aarohi.subsense.dto.SubscriptionSummaryDTO;
 import com.aarohi.subsense.dto.UpcomingRenewalDTO;
@@ -63,5 +64,15 @@ public class SubscriptionController {
     public Map<String, Double> getCategoryWiseSpending() {
 
         return subscriptionService.getCategoryWiseSpending();
+    }
+
+    @GetMapping("/dashboard")
+    public DashboardDTO getDashboard() {
+        return subscriptionService.getDashboard();
+    }
+    @GetMapping("/most-expensive")
+    public SubscriptionResponseDTO getMostExpensiveSubscription() {
+
+        return subscriptionService.getMostExpensiveSubscription();
     }
 }
